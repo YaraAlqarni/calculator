@@ -22,7 +22,7 @@ public class Calculator extends JFrame {
     private double previousOperand = 0;
     private String currentOperation = "";
     private boolean operationSelected = false;
-
+ private CalculatorFacade facade = new CalculatorFacade();
     public Calculator() {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setUndecorated(true);
@@ -57,7 +57,7 @@ public class Calculator extends JFrame {
             Operation operation = OperationFactory.createOperation(currentOperation);
 
             if (operation != null) {
-                double result = operation.execute(previousOperand, current);
+               double result = facade.calculate(currentOperation, previousOperand, current);
                 display.setText(format(result));
                 currentOperation = "";
             }
