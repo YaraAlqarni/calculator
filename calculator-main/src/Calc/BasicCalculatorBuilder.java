@@ -38,7 +38,7 @@ public class BasicCalculatorBuilder implements CalculatorBuilder {
             btn.setFont(new Font("SansSerif", Font.BOLD, 20));
             buttonPanel.add(btn);
 
-            if (text.matches("[0-9]")) {
+       if (text.matches("[0-9]")) {
                 btn.addActionListener(e -> calculator.appendNumber(text));
             } else if (text.equals("C")) {
                 btn.addActionListener(e -> calculator.clear());
