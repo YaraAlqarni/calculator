@@ -32,7 +32,7 @@ public class OperationEntry implements Operation {
         this.rightOperand = rightOperand;
     }
 
-    // لتحديد أولوية العمليات: * و ÷ أعلى أولوية من + و -
+
     public int getPrecedence() {
         return (operatorSymbol.equals("×") || operatorSymbol.equals("÷")) ? 2 : 1;
     }
