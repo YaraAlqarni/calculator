@@ -8,55 +8,62 @@ import java.util.List;
 
 /**
  *
- * @author Noor Safia
+ * @author Noor Safia..
  */
 
-/**
- * LoggingDecorator - Adds operation logging functionality
- * SOLVED PROBLEMS: Provides operation history, debugging, audit trail
- * ENHANCES: All operations get automatic logging without changing their code
- */
 
 public class LoggingDecorator extends OperationDecorator {
     private static List<String> operationHistory = new ArrayList<>();
-    
+
     public LoggingDecorator(Operation operation) {
         super(operation);
     }
-    
+
     @Override
     public double execute(double a, double b) {
         String operationName = getOperationName();
         String operationSymbol = getOperationSymbol();
-        String logEntry = String.format("%s: %.2f %s %.2f", operationName, a, operationSymbol, b);
+        
+        System.out.println("[LOG] Executing operation: " + operationName);
+        System.out.println("[LOG] Operands: a=" + a + ", b=" + b);
         
         double result = super.execute(a, b);
         
-        logEntry += String.format(" = %.2f", result);
-        operationHistory.add(logEntry);
+        System.out.println("[LOG] Result: " + result);
         
-        System.out.println("OPERATION LOG: " + logEntry);
+        String logEntry = String.format("%s: %.2f %s %.2f = %.2f", 
+                                        operationName, a, operationSymbol, b, result);
+        operationHistory.add(logEntry);
         
         return result;
     }
-    
+
     public static List<String> getOperationHistory() {
         return new ArrayList<>(operationHistory);
     }
-    
+
     public static void clearHistory() {
         operationHistory.clear();
     }
-    
+
     private String getOperationName() {
-        return decoratedOperation.getClass().getSimpleName();
+        Operation actualOperation = decoratedOperation;
+        while (actualOperation instanceof OperationDecorator) {
+            actualOperation = ((OperationDecorator) actualOperation).decoratedOperation;
+        }
+        return actualOperation.getClass().getSimpleName();
     }
-    
+
     private String getOperationSymbol() {
-        if (decoratedOperation instanceof AddOperation) return "+";
-        if (decoratedOperation instanceof SubtractOperation) return "-";
-        if (decoratedOperation instanceof MultiplyOperation) return "×";
-        if (decoratedOperation instanceof DivideOperation) return "÷";
+        Operation actualOperation = decoratedOperation;
+        while (actualOperation instanceof OperationDecorator) {
+            actualOperation = ((OperationDecorator) actualOperation).decoratedOperation;
+        }
+        
+        if (actualOperation instanceof AddOperation) return "+";
+        if (actualOperation instanceof SubtractOperation) return "-";
+        if (actualOperation instanceof MultiplyOperation) return "×";
+        if (actualOperation instanceof DivideOperation) return "÷";
         return "?";
     }
 }
