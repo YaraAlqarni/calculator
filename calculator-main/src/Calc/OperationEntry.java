@@ -23,21 +23,15 @@ public class OperationEntry implements Operation {
         }
     }
 
- 
     public void setLeftOperand(Operation leftOperand) {
         this.leftOperand = leftOperand;
     }
-
     public void setRightOperand(Operation rightOperand) {
         this.rightOperand = rightOperand;
     }
-
-
     public int getPrecedence() {
         return (operatorSymbol.equals("×") || operatorSymbol.equals("÷")) ? 2 : 1;
     }
-
-   
     @Override
     public double execute(double a, double b) {
         if (leftOperand == null || rightOperand == null) {

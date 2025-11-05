@@ -7,20 +7,15 @@ package Calc;
 import javax.swing.*;
 import java.awt.*;
 
-/**
- *
- * @author Yara , Nour , Ayah javax.swing.JFrame
- */
 
-/**
- * Calculator - Enhanced with error handling for decorated operations
- * CHANGES: Added exception handling for ValidationDecorator exceptions
- */
 
 public class Calculator extends JFrame {
-   private JTextField display;
+
+    private JTextField display;
+    
+ 
     private Operation currentExpressionRoot = null;
-    private OperationEntry lastOperationEntry = null;
+    private Operation lastOperation = null;
     private boolean operationSelected = false;
 
     public Calculator() {
@@ -33,6 +28,7 @@ public class Calculator extends JFrame {
         this.display = display;
     }
 
+  
     public void appendNumber(String num) {
         if (operationSelected) {
             display.setText("");
@@ -41,75 +37,75 @@ public class Calculator extends JFrame {
         display.setText(display.getText().equals("0") ? num : display.getText() + num);
     }
 
+   
     public void chooseOperation(String symbol) {
         if (display.getText().isEmpty()) return;
         double currentValue = Double.parseDouble(display.getText());
-        NumericOperand newOperand = new NumericOperand(currentValue);
-
-        if (currentExpressionRoot == null) {
-            OperationEntry newComposite = new OperationEntry(symbol);
-            newComposite.setLeftOperand(newOperand);
+        Operation newOperand = new NumericOperand(currentValue); 
+        
+        if (currentExpressionRoot == null) {  
+            Operation newComposite = new OperationEntry(symbol);
+            ((OperationEntry)newComposite).setLeftOperand(newOperand);
             currentExpressionRoot = newComposite;
-            lastOperationEntry = newComposite;
+            lastOperation = newComposite;
         } else {
-            if (lastOperationEntry.getRightOperand() == null)
-                lastOperationEntry.setRightOperand(newOperand);
-
-            OperationEntry newComposite = new OperationEntry(symbol);
-            int newPrecedence = newComposite.getPrecedence();
-            int currentPrecedence = lastOperationEntry.getPrecedence();
-
-            if (newPrecedence > currentPrecedence) {
-                Operation lastRightOperand = lastOperationEntry.getRightOperand();
-                lastOperationEntry.setRightOperand(newComposite);
-                newComposite.setLeftOperand(lastRightOperand);
-                lastOperationEntry = newComposite;
+            OperationEntry lastOpEntry = (OperationEntry) lastOperation;
+            if (lastOpEntry.getRightOperand() == null)
+                lastOpEntry.setRightOperand(newOperand);
+            Operation newComposite = new OperationEntry(symbol);
+            int newPrecedence = ((OperationEntry)newComposite).getPrecedence();
+            int currentPrecedence = lastOpEntry.getPrecedence();
+            if (newPrecedence > currentPrecedence) {  
+                Operation lastRightOperand = lastOpEntry.getRightOperand();
+                lastOpEntry.setRightOperand(newComposite);
+                ((OperationEntry)newComposite).setLeftOperand(lastRightOperand);
+                lastOperation = newComposite;
             } else {
                 double result = currentExpressionRoot.execute(0, 0);
-                NumericOperand resultLeaf = new NumericOperand(result);
-                newComposite.setLeftOperand(resultLeaf);
+                Operation resultAsOperand = new NumericOperand(result);
+                ((OperationEntry)newComposite).setLeftOperand(resultAsOperand);
                 currentExpressionRoot = newComposite;
-                lastOperationEntry = newComposite;
-            }
-        }
-
+                lastOperation = newComposite;
+            }  }
         display.setText(display.getText() + " " + symbol + " ");
-        operationSelected = true;
-    }
-
+        operationSelected = true;}
     public void compute() {
         if (currentExpressionRoot == null || display.getText().isEmpty()) return;
-
         try {
-            double currentValue = Double.parseDouble(display.getText().trim().split(" ")[display.getText().trim().split(" ").length - 1]);
-            NumericOperand finalOperand = new NumericOperand(currentValue);
+            String[] tokens = display.getText().trim().split(" ");
+            double currentValue = Double.parseDouble(tokens[tokens.length - 1]);
+            Operation finalOperand = new NumericOperand(currentValue);
 
-            if (lastOperationEntry != null && lastOperationEntry.getRightOperand() == null)
-                lastOperationEntry.setRightOperand(finalOperand);
+            if (lastOperation != null && ((OperationEntry)lastOperation).getRightOperand() == null)
+                ((OperationEntry)lastOperation).setRightOperand(finalOperand);
 
             double result = currentExpressionRoot.execute(0, 0);
             display.setText(format(result));
+
+            
             currentExpressionRoot = new NumericOperand(result);
-            lastOperationEntry = null;
+            lastOperation = null;
 
         } catch (ArithmeticException e) {
             display.setText("Error: " + e.getMessage());
             currentExpressionRoot = null;
-            lastOperationEntry = null;
+            lastOperation = null;
         } catch (Exception e) {
             display.setText("Calculation Error");
             currentExpressionRoot = null;
-            lastOperationEntry = null;
+            lastOperation = null;
         }
     }
 
+   
     public void clear() {
         currentExpressionRoot = null;
-        lastOperationEntry = null;
+        lastOperation = null;
         operationSelected = false;
         display.setText("0");
     }
 
     private String format(double val) {
-        return (val == (int) val) ? String.valueOf((int) val) : String.valueOf(val);}}
-
+        return (val == (int) val) ? String.valueOf((int) val) : String.valueOf(val);
+    }
+}
