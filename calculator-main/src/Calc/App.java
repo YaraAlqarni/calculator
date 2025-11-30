@@ -9,7 +9,6 @@ package Calc;
  * @author  @author Yara , Nour , Ayah
  */
 
-
 public class App {
     public static void main(String[] args) {
         setupDecoratedOperations();
@@ -19,6 +18,8 @@ public class App {
         Calculator calculator = engineer.constructCalculator();
         
         calculator.setVisible(true);
+        
+        System.out.println("Calculator Started with Theme: " + calculator.getCurrentTheme().getThemeName());
     }
     
     public static void setupDecoratedOperations() {

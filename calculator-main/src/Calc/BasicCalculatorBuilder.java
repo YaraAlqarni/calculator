@@ -10,13 +10,11 @@ package Calc;
 
 import java.awt.*;
 import javax.swing.*;
-
+import javax.swing.border.EmptyBorder;
 /**
  * 
  * @author Yara , Nour , Ayah
  */
-
-
 public class BasicCalculatorBuilder implements CalculatorBuilder {
     private Calculator calculator;
     private JPanel mainPanel;
@@ -28,65 +26,130 @@ public class BasicCalculatorBuilder implements CalculatorBuilder {
 
     @Override
     public void buildUI() {
-        // Create main panel with padding
-        mainPanel = new JPanel(new BorderLayout(10, 10));
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
-        mainPanel.setBackground(new Color(245, 245, 245)); // light background
+        // Create main panel with modern padding
+        mainPanel = new JPanel(new BorderLayout(8, 8));
+        mainPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
+        mainPanel.setBackground(new Color(248, 249, 250));
 
-        // Larger display
+        // Modern display with better styling
         display = new JTextField("0");
         display.setEditable(false);
-        display.setFont(new Font("SansSerif", Font.BOLD, 36));
+        display.setFont(new Font("Segoe UI", Font.BOLD, 32));
         display.setHorizontalAlignment(JTextField.RIGHT);
         display.setBackground(Color.WHITE);
-        display.setBorder(BorderFactory.createLineBorder(Color.GRAY, 2));
-        mainPanel.add(display, BorderLayout.NORTH);
+        display.setForeground(new Color(33, 37, 41));
+        display.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(206, 212, 218), 2),
+            BorderFactory.createEmptyBorder(12, 15, 12, 15)
+        ));
+        
+        // Elegant theme control panel
+        JPanel controlPanel = createThemeControlPanel();
+        
+        JPanel topPanel = new JPanel(new BorderLayout(10, 0));
+        topPanel.setBackground(mainPanel.getBackground());
+        topPanel.add(display, BorderLayout.CENTER);
+        topPanel.add(controlPanel, BorderLayout.EAST);
+        
+        mainPanel.add(topPanel, BorderLayout.NORTH);
 
-        // Larger grid (buttons)
-        JPanel buttonPanel = new JPanel(new GridLayout(4, 4, 10, 10));
-        buttonPanel.setBackground(new Color(230, 230, 230));
+        // Modern calculator buttons
+        JPanel buttonPanel = createButtonPanel();
+        mainPanel.add(buttonPanel, BorderLayout.CENTER);
+
+        // Finalize calculator setup
+        calculator.setDisplay(display);
+        calculator.setMainPanel(mainPanel);
+        calculator.add(mainPanel);
+        calculator.pack();
+        calculator.setSize(380, 520);
+        calculator.setLocationRelativeTo(null);
+        calculator.setResizable(false);
+        
+        // Apply initial theme
+        calculator.applyTheme();
+    }
+    
+    /**
+     * Creates an elegant theme control panel with modern design
+     * UPDATED: No tooltip updates to avoid theme name display
+     */
+    private JPanel createThemeControlPanel() {
+        JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
+        controlPanel.setBackground(mainPanel.getBackground());
+        
+        // Modern theme switcher button with icon
+        JButton themeBtn = new JButton("🎨");
+        themeBtn.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 18));
+        themeBtn.setToolTipText("Switch Theme"); // Static tooltip only
+        themeBtn.setPreferredSize(new Dimension(44, 44));
+        themeBtn.setFocusPainted(false);
+        themeBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        
+        // Modern button styling
+        themeBtn.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(206, 212, 218), 1),
+            BorderFactory.createEmptyBorder(8, 8, 8, 8)
+        ));
+        
+        // STRATEGY PATTERN: Button action switches between theme strategies
+        // UPDATED: No theme name display in tooltip or display
+        themeBtn.addActionListener(e -> {
+            calculator.switchTheme();
+            // REMOVED: Tooltip update to avoid theme name display
+        });
+        
+        controlPanel.add(themeBtn);
+        return controlPanel;
+    }
+    
+    /**
+     * Creates modern calculator button panel
+     */
+    private JPanel createButtonPanel() {
+        JPanel buttonPanel = new JPanel(new GridLayout(4, 4, 8, 8));
+        buttonPanel.setBackground(mainPanel.getBackground());
+        
         String[] buttons = {
             "7", "8", "9", "÷",
-            "4", "5", "6", "×",
+            "4", "5", "6", "×", 
             "1", "2", "3", "-",
             "0", "C", "=", "+"
         };
 
         for (String text : buttons) {
-            JButton btn = new JButton(text);
-            btn.setFont(new Font("SansSerif", Font.BOLD, 28));
-            btn.setFocusPainted(false);
-            btn.setBackground(Color.WHITE);
-            btn.setOpaque(true);
-            btn.setBorder(BorderFactory.createLineBorder(new Color(180, 180, 180), 2));
-            btn.setPreferredSize(new Dimension(90, 90)); // bigger button
-
-            // Button actions
-            if (text.matches("[0-9]")) {
-                btn.addActionListener(e -> calculator.appendNumber(text));
-            } else if (text.equals("C")) {
-                btn.setBackground(new Color(255, 180, 180));
-                btn.addActionListener(e -> calculator.clear());
-            } else if (text.equals("=")) {
-                btn.setBackground(new Color(180, 255, 180));
-                btn.addActionListener(e -> calculator.compute());
-            } else {
-                btn.setBackground(new Color(220, 220, 255));
-                btn.addActionListener(e -> calculator.chooseOperation(text));
-            }
-
+            JButton btn = createModernButton(text);
             buttonPanel.add(btn);
         }
 
-        mainPanel.add(buttonPanel, BorderLayout.CENTER);
+        return buttonPanel;
+    }
+    
+    private JButton createModernButton(String text) {
+        JButton btn = new JButton(text);
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        btn.setFocusPainted(false);
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btn.setOpaque(true);
+        
+        // Modern button styling
+        btn.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(206, 212, 218), 1),
+            BorderFactory.createEmptyBorder(12, 0, 12, 0)
+        ));
+        
+        // Button actions
+        if (text.matches("[0-9]")) {
+            btn.addActionListener(e -> calculator.appendNumber(text));
+        } else if (text.equals("C")) {
+            btn.addActionListener(e -> calculator.clear());
+        } else if (text.equals("=")) {
+            btn.addActionListener(e -> calculator.compute());
+        } else {
+            btn.addActionListener(e -> calculator.chooseOperation(text));
+        }
 
-        // Add to calculator window
-        calculator.setDisplay(display);
-        calculator.add(mainPanel);
-        calculator.pack();
-        calculator.setSize(500, 600); 
-        calculator.setLocationRelativeTo(null);
-        calculator.setResizable(false);
+        return btn;
     }
 
     @Override
