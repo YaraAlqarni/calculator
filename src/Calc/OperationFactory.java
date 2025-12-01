@@ -9,8 +9,21 @@ package Calc;
  *
  * @author yaraworldclass
  */
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * OperationFactory - Enhanced to support decorated operations
+ * INTEGRATION: Factory Method + Decorator Pattern work together seamlessly
+ */
 public class OperationFactory {
+    private static Map<String, Operation> decoratedOperations = new HashMap<>();
+    
     public static Operation createOperation(String opSymbol) {
+        if (decoratedOperations.containsKey(opSymbol)) {
+            return decoratedOperations.get(opSymbol);
+        }
+        
         return switch (opSymbol) {
             case "+" -> new AddOperation();
             case "-" -> new SubtractOperation();
@@ -18,5 +31,13 @@ public class OperationFactory {
             case "÷" -> new DivideOperation();
             default -> null;
         };
+    }
+    
+    public static void setDecoratedOperation(String opSymbol, Operation decoratedOp) {
+        decoratedOperations.put(opSymbol, decoratedOp);
+    }
+    
+    public static void clearDecoratedOperations() {
+        decoratedOperations.clear();
     }
 }
