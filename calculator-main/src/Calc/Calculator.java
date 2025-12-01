@@ -4,20 +4,27 @@
  */
 
 package Calc;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
+
 /**
- *
- * @author Yara , Nour , Ayah
+ * 
+ * @author Yara, Nour, Ayah
  */
 public class Calculator extends JFrame {
     private JTextField display;
     private Operation currentExpressionRoot = null;
     private OperationEntry lastOperationEntry = null;
     private boolean operationSelected = false;
+    
+    // COMMAND PATTERN: Command history management
+    private Stack<Command> commandHistory = new Stack<>();
+    private Stack<Command> redoStack = new Stack<>();
     
     // STRATEGY PATTERN IMPLEMENTATION: Theme management
     private ThemeStrategy currentTheme;
@@ -32,10 +39,7 @@ public class Calculator extends JFrame {
         setUndecorated(true);
         setResizable(false);
 
-        // STRATEGY PATTERN: Initialize available theme strategies
         initializeThemes();
-        
-        // Set default theme strategy
         this.currentTheme = availableThemes.get(currentThemeIndex);
 
         // Window dragging implementation
@@ -59,13 +63,67 @@ public class Calculator extends JFrame {
     }
     
     /**
-     * STRATEGY PATTERN: Initialize concrete strategy implementations
+     * COMMAND PATTERN: Execute a command and add it to history
+     * This is the INVOKER's main responsibility
      */
+    public double executeCommand(Command command) {
+        double result = command.execute();
+        commandHistory.push(command);
+        redoStack.clear(); // Clear redo stack when new command is executed
+        return result;
+    }
+    
+    /**
+     * COMMAND PATTERN: Undo the last command
+     */
+    public void undo() {
+        if (!commandHistory.isEmpty()) {
+            Command lastCommand = commandHistory.pop();
+            lastCommand.undo();
+            redoStack.push(lastCommand);
+            
+            // Update display to show previous result
+            if (!commandHistory.isEmpty()) {
+                display.setText("Undo performed");
+            } else {
+                display.setText("0");
+            }
+            
+            // Reset expression state
+            currentExpressionRoot = null;
+            lastOperationEntry = null;
+            operationSelected = false;
+        } else {
+            display.setText("Nothing to undo");
+        }
+    }
+    
+    /**
+     * COMMAND PATTERN: Redo the last undone command
+     */
+    public void redo() {
+        if (!redoStack.isEmpty()) {
+            Command command = redoStack.pop();
+            double result = command.execute();
+            commandHistory.push(command);
+            display.setText(format(result));
+        } else {
+            display.setText("Nothing to redo");
+        }
+    }
+    
+    /**
+     * Get command history for debugging or display
+     */
+    public Stack<Command> getCommandHistory() {
+        return commandHistory;
+    }
+    
     private void initializeThemes() {
         availableThemes = new ArrayList<>();
-        availableThemes.add(new LightTheme());           // Concrete Strategy 1
-        availableThemes.add(new DarkTheme());            // Concrete Strategy 2  
-        availableThemes.add(new ProfessionalBlueTheme());// Concrete Strategy 3
+        availableThemes.add(new LightTheme());
+        availableThemes.add(new DarkTheme());
+        availableThemes.add(new ProfessionalBlueTheme());
     }
 
     public void setDisplay(JTextField display) {
@@ -76,32 +134,17 @@ public class Calculator extends JFrame {
         this.mainPanel = panel;
     }
 
-    // THEME STRATEGY PATTERN METHODS
-    
-    /**
-     * STRATEGY PATTERN: Set current theme strategy
-     */
     public void setTheme(ThemeStrategy theme) {
         this.currentTheme = theme;
         applyTheme();
     }
     
-    /**
-     * STRATEGY PATTERN: Cycle through available theme strategies
-     * UPDATED: No theme name display in the main display area
-     */
     public void switchTheme() {
         currentThemeIndex = (currentThemeIndex + 1) % availableThemes.size();
         ThemeStrategy newTheme = availableThemes.get(currentThemeIndex);
         setTheme(newTheme);
-        
-        // REMOVED: Theme name display in main display
-        // Only apply the theme visually without interrupting user input
     }
     
-    /**
-     * STRATEGY PATTERN: Apply current theme strategy to all UI components
-     */
     public void applyTheme() {
         if (mainPanel != null) {
             mainPanel.setBackground(currentTheme.getBackgroundColor());
@@ -117,9 +160,6 @@ public class Calculator extends JFrame {
         }
     }
 
-    /**
-     * STRATEGY PATTERN: Update all buttons using current theme strategy
-     */
     private void updateAllButtonsTheme() {
         if (mainPanel == null) return;
         
@@ -136,24 +176,20 @@ public class Calculator extends JFrame {
         }
     }
 
-    /**
-     * STRATEGY PATTERN: Apply theme to individual button based on its role
-     */
     private void updateButtonTheme(JButton button) {
         String text = button.getText();
         Color buttonColor = currentTheme.getButtonColor();
         Color textColor = currentTheme.getTextColor();
         
-        // Apply different colors based on button function using current strategy
         if (text.equals("C")) {
             buttonColor = currentTheme.getSpecialButtonColor();
         } else if (text.equals("=")) {
-            buttonColor = new Color(40, 167, 69); // Success green
+            buttonColor = new Color(40, 167, 69);
             textColor = Color.WHITE;
         } else if (text.matches("[+\\-×÷]")) {
             buttonColor = currentTheme.getOperationButtonColor();
             textColor = Color.WHITE;
-        } else if (text.equals("🎨")) {
+        } else if (text.equals("🎨") || text.equals("↶") || text.equals("↷")) {
             buttonColor = currentTheme.getThemeAccentColor();
             textColor = Color.WHITE;
         }
@@ -166,7 +202,6 @@ public class Calculator extends JFrame {
         ));
     }
 
-    // STANDARD CALCULATOR FUNCTIONS (بدون تغيير)
     public void appendNumber(String num) {
         if (display == null) return;
         
@@ -264,6 +299,10 @@ public class Calculator extends JFrame {
         }
     }
 
+    /**
+     * UPDATED: Now uses Command Pattern to execute computation
+     * Creates a CompositeCommand from the expression tree
+     */
     public void compute() {
         if (currentExpressionRoot == null || display.getText().isEmpty()) {
             display.setText("No operation to compute");
@@ -279,7 +318,12 @@ public class Calculator extends JFrame {
                 lastOperationEntry.setRightOperand(finalOperand);
             }
 
-            double result = currentExpressionRoot.execute(0, 0);
+            // COMMAND PATTERN: Create CompositeCommand for the entire expression
+            CompositeCommand compositeCmd = new CompositeCommand(currentExpressionRoot, display.getText());
+            
+            // Execute through command pattern
+            double result = executeCommand(compositeCmd);
+            
             display.setText(format(result));
             currentExpressionRoot = new NumericOperand(result);
             lastOperationEntry = null;
@@ -312,7 +356,6 @@ public class Calculator extends JFrame {
         return (val == (int) val) ? String.valueOf((int) val) : String.valueOf(val);
     }
     
-    // STRATEGY PATTERN: Access to current strategy and available strategies
     public ThemeStrategy getCurrentTheme() {
         return currentTheme;
     }

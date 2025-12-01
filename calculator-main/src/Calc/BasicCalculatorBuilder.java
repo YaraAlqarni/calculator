@@ -34,7 +34,7 @@ public class BasicCalculatorBuilder implements CalculatorBuilder {
         // Modern display with better styling
         display = new JTextField("0");
         display.setEditable(false);
-        display.setFont(new Font("Segoe UI", Font.BOLD, 32));
+        display.setFont(new Font("Segoe UI", Font.BOLD, 15));
         display.setHorizontalAlignment(JTextField.RIGHT);
         display.setBackground(Color.WHITE);
         display.setForeground(new Color(33, 37, 41));
@@ -43,7 +43,7 @@ public class BasicCalculatorBuilder implements CalculatorBuilder {
             BorderFactory.createEmptyBorder(12, 15, 12, 15)
         ));
         
-        // Elegant theme control panel
+        // UPDATED: Control panel now includes undo/redo buttons
         JPanel controlPanel = createThemeControlPanel();
         
         JPanel topPanel = new JPanel(new BorderLayout(10, 0));
@@ -71,36 +71,48 @@ public class BasicCalculatorBuilder implements CalculatorBuilder {
     }
     
     /**
-     * Creates an elegant theme control panel with modern design
-     * UPDATED: No tooltip updates to avoid theme name display
+     * UPDATED: Added Undo and Redo buttons for Command Pattern
+     * Creates an elegant control panel with theme switcher, undo, and redo
      */
     private JPanel createThemeControlPanel() {
         JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
         controlPanel.setBackground(mainPanel.getBackground());
         
-        // Modern theme switcher button with icon
-        JButton themeBtn = new JButton("🎨");
-        themeBtn.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 18));
-        themeBtn.setToolTipText("Switch Theme"); // Static tooltip only
-        themeBtn.setPreferredSize(new Dimension(44, 44));
-        themeBtn.setFocusPainted(false);
-        themeBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        // COMMAND PATTERN: Undo button
+        JButton undoBtn = createControlButton("↶", "Undo");
+        undoBtn.addActionListener(e -> calculator.undo());
+        controlPanel.add(undoBtn);
         
-        // Modern button styling
-        themeBtn.setBorder(BorderFactory.createCompoundBorder(
+        // COMMAND PATTERN: Redo button
+        JButton redoBtn = createControlButton("↷", "Redo");
+        redoBtn.addActionListener(e -> calculator.redo());
+        controlPanel.add(redoBtn);
+        
+        // Theme switcher button
+        JButton themeBtn = createControlButton("🎨", "Switch Theme");
+        themeBtn.addActionListener(e -> calculator.switchTheme());
+        controlPanel.add(themeBtn);
+        
+        return controlPanel;
+    }
+    
+    /**
+     * Helper method to create consistent control buttons
+     */
+    private JButton createControlButton(String text, String tooltip) {
+        JButton btn = new JButton(text);
+        btn.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 18));
+        btn.setToolTipText(tooltip);
+        btn.setPreferredSize(new Dimension(44, 44));
+        btn.setFocusPainted(false);
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        
+        btn.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(new Color(206, 212, 218), 1),
             BorderFactory.createEmptyBorder(8, 8, 8, 8)
         ));
         
-        // STRATEGY PATTERN: Button action switches between theme strategies
-        // UPDATED: No theme name display in tooltip or display
-        themeBtn.addActionListener(e -> {
-            calculator.switchTheme();
-            // REMOVED: Tooltip update to avoid theme name display
-        });
-        
-        controlPanel.add(themeBtn);
-        return controlPanel;
+        return btn;
     }
     
     /**
@@ -132,7 +144,6 @@ public class BasicCalculatorBuilder implements CalculatorBuilder {
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btn.setOpaque(true);
         
-        // Modern button styling
         btn.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(new Color(206, 212, 218), 1),
             BorderFactory.createEmptyBorder(12, 0, 12, 0)
