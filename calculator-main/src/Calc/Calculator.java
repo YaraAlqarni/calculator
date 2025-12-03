@@ -42,7 +42,6 @@ public class Calculator extends JFrame {
         initializeThemes();
         this.currentTheme = availableThemes.get(currentThemeIndex);
 
-        // Window dragging implementation
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -61,35 +60,29 @@ public class Calculator extends JFrame {
             }
         });
     }
-    
-    /**
-     * COMMAND PATTERN: Execute a command and add it to history
-     * This is the INVOKER's main responsibility
-     */
+  
     public double executeCommand(Command command) {
         double result = command.execute();
         commandHistory.push(command);
-        redoStack.clear(); // Clear redo stack when new command is executed
+        redoStack.clear(); 
         return result;
     }
     
-    /**
-     * COMMAND PATTERN: Undo the last command
-     */
+   
     public void undo() {
         if (!commandHistory.isEmpty()) {
             Command lastCommand = commandHistory.pop();
             lastCommand.undo();
             redoStack.push(lastCommand);
             
-            // Update display to show previous result
+            
             if (!commandHistory.isEmpty()) {
                 display.setText("Undo performed");
             } else {
                 display.setText("0");
             }
             
-            // Reset expression state
+            
             currentExpressionRoot = null;
             lastOperationEntry = null;
             operationSelected = false;
@@ -98,9 +91,7 @@ public class Calculator extends JFrame {
         }
     }
     
-    /**
-     * COMMAND PATTERN: Redo the last undone command
-     */
+   
     public void redo() {
         if (!redoStack.isEmpty()) {
             Command command = redoStack.pop();
@@ -112,9 +103,7 @@ public class Calculator extends JFrame {
         }
     }
     
-    /**
-     * Get command history for debugging or display
-     */
+  
     public Stack<Command> getCommandHistory() {
         return commandHistory;
     }
@@ -299,10 +288,7 @@ public class Calculator extends JFrame {
         }
     }
 
-    /**
-     * UPDATED: Now uses Command Pattern to execute computation
-     * Creates a CompositeCommand from the expression tree
-     */
+  
     public void compute() {
         if (currentExpressionRoot == null || display.getText().isEmpty()) {
             display.setText("No operation to compute");

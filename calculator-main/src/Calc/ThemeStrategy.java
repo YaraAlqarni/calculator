@@ -10,14 +10,8 @@ package Calc;
  */
 import java.awt.*;
 
-/**
- * Strategy Interface for Themes
- * STRUCTURE: This is the Strategy interface in the Strategy Pattern
- * IMPLEMENTATION: Each concrete theme implements this interface to provide different color schemes
- * BENEFIT: Easy to add new themes without modifying existing code
- * SOLVES: Dynamic theme switching without modifying calculator UI code
- * INTEGRATION: Works seamlessly with existing Calculator GUI components
- */
+// Strategy Interface for Themes
+ 
 public interface ThemeStrategy {
     Color getBackgroundColor();
     Color getDisplayColor();

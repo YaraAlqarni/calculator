@@ -8,18 +8,11 @@ package Calc;
  *
  * @author yaraworldclass
  */
-/**
- * RESPONSIBILITY: Encapsulates all information needed to execute an operation
- * RECEIVER: The actual Operation object (AddOperation, SubtractOperation, etc.)
- * INTEGRATION: Works with Decorator pattern (ValidationDecorator, LoggingDecorator)
- */
-/**
- * Concrete Command — wraps ANY Operation (receiver)
- * Example: AddOperation, SubtractOperation...
- */
+
+
 public class ArithmeticCommand implements Command {
 
-    private Operation operation; // reciever
+    private Operation operation; 
     private double operation1;
     private double operation2;
 
@@ -40,6 +33,5 @@ public class ArithmeticCommand implements Command {
     @Override
     public void undo() {
         System.out.println("Undoing: " + operation.getClass().getSimpleName());
-        // You may restore display value here.
     }
 }

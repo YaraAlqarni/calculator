@@ -9,9 +9,12 @@
             <file>file:/C:/Users/norsa/Downloads/calculator/calculator-main/src/Calc/ValidationDecorator.java</file>
             <file>file:/C:/Users/norsa/Downloads/calculator/calculator-main/src/Calc/LoggingDecorator.java</file>
             <file>file:/C:/Users/norsa/Downloads/calculator/calculator-main/src/Calc/Calculator.java</file>
-            <file>file:/C:/Users/norsa/Downloads/calculator/calculator-main/src/Calc/NumericOperand.java</file>
             <file>file:/C:/Users/norsa/Downloads/calculator/calculator-main/src/Calc/OperationFactory.java</file>
-            <file>file:/C:/Users/norsa/Downloads/calculator/calculator-main/src/Calc/OperationEntry.java</file>
+            <file>file:/C:/Users/norsa/Downloads/calculator/calculator-main/src/Calc/BasicCalculatorBuilder.java</file>
+            <file>file:/C:/Users/norsa/Downloads/calculator/calculator-main/src/Calc/ThemeStrategy.java</file>
+            <file>file:/C:/Users/norsa/Downloads/calculator/calculator-main/src/Calc/DarkTheme.java</file>
+            <file>file:/C:/Users/norsa/Downloads/calculator/calculator-main/src/Calc/LightTheme.java</file>
+            <file>file:/C:/Users/norsa/Downloads/calculator/calculator-main/src/Calc/ProfessionalBlueTheme.java</file>
         </group>
     </open-files>
 </project-private>
