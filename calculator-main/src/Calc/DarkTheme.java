@@ -10,12 +10,7 @@ package Calc;
  */
 import java.awt.*;
 
-/**
- * Concrete Strategy - Dark Theme  
- * PATTERN ROLE: Concrete Strategy implementation
- * DESIGN: Sophisticated dark theme with purple accents
- * USABILITY: Reduces eye strain, ideal for low-light environments
- */
+//Concrete Strategy
 
 public class DarkTheme implements ThemeStrategy {
     @Override

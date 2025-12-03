@@ -12,12 +12,7 @@ import java.awt.*;
  */
 
 
-/**
- * Concrete Strategy - Professional Blue Theme
- * PATTERN ROLE: Concrete Strategy implementation  
- * DESIGN: Corporate-inspired blue theme with teal accents
- * USABILITY: Professional appearance, easy on the eyes for extended use
- */
+//Concrete Strategy
 public class ProfessionalBlueTheme implements ThemeStrategy {
     @Override
     public Color getBackgroundColor() {

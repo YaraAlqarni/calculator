@@ -9,12 +9,7 @@ package Calc;
  * @author Noor Safia
  */
 import java.awt.*;
-/**
- * Concrete Strategy - Light Theme
- * PATTERN ROLE: Concrete Strategy implementation
- * DESIGN: Clean, modern light theme with blue accents
- * USABILITY: Best for daytime use and well-lit environments
- */
+// Concrete Strategy
 public class LightTheme implements ThemeStrategy {
     @Override
     public Color getBackgroundColor() {
